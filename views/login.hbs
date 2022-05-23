@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+	<title>Login</title>
+</head>
+<body>
+	<form action="/login" method="post">
+	<div>
+		{{#if error}}
+		<p class="err-msg">User or Password is Incorrect</p>
+		{{/if}}
+		<h1 class="h1">Login</h1>
+	</div>
+	<div class="form-group">
+		<label >Username:</label>
+		<input type="text" name="username" id="username" placeholder="Enter your username" required>
+	</div>
+	<div class="form-group">
+		<label >Password:</label>
+		<input type="password" name="password" id="password" placeholder="Enter your password" required>
+	</div>
+	<div>
+		<input type="submit" value="Login"/>
+		<a href="/register" class="anker">Sign Up first</a><br><br><br>
+		<a href="/reset" class="anker">Forgot Password</a>
+	</div>
+	</form>
+</body>
+</html>

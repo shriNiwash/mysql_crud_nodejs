@@ -1,0 +1,182 @@
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.insert{
+    margin-top: 49px;
+    width: 31%;
+    background: beige;
+    height: 392px;
+    justify-content: center;
+    align-items: center;
+}
+
+.idea{
+    padding: 29px;
+    border: 2px solid;
+    border-radius: 26px;
+    justify-content: center;
+    text-align: center;
+    background: blanchedalmond;
+    color: red;
+    font-size: 17px;
+    width: 232px;
+}
+
+#btns{
+    padding: 13px;
+    border: 2px solid;
+    border-radius: 10px;
+    background: green;
+    font-size: 22px;
+    color: white;
+}
+
+.form_css{
+    text-align: center;
+    margin-top: 28px;
+}
+
+#btns:hover{
+    background-color: red;
+    color: #000;
+}
+
+
+/* login */
+
+.err-msg {
+	padding: 10px 15px;
+	background-color: #fff;
+	border-radius: 8px;
+	margin-bottom: 15px;
+	color: red;
+	box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+form .form-group {
+	margin-bottom: 30px;
+    margin-left: 483px;
+    width: 30%;
+    margin-bottom: 30px;
+    align-items: center;
+    justify-content: center;
+    text-align: cener;
+}
+
+form label {
+	display: block;
+	color:rgb(16, 15, 15);
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+
+form input {
+	appearance: none;
+	background: none;
+	outline: none;
+	border: none;
+}
+
+form input:not([type="submit"]) {
+	display: block;
+	width: 100%;
+	padding: 15px;
+	border-radius: 8px;
+	background-color: rgba(0, 0, 0, 0.2);
+	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+	transition: 0.4s;
+	color: #222;
+	font-size: 18px;
+	font-weight: 300;
+}
+
+form input:not([type="submit"])::placeholder {
+	color: #CCC;
+}
+
+form input:not([type="submit"]):focus, form input:not([type="submit"]):valid {
+	background-color: #fff;
+	box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+form input[type="submit"] {
+	display: block;
+	width: 20%;
+	padding: 15px;
+	border-radius: 8px;
+	background-color: #2F4960;
+	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+	transition: 0.4s;
+	color: #FFF;
+	font-size: 20px;
+	font-weight: 700;
+	cursor: pointer;
+	margin-left: 551px;
+
+}
+
+.h1{
+	text-align: center;
+}
+
+.anker{
+	text-align: center;
+    align-items: center;
+    margin-left: 640px;
+    font-size: 25px;
+    font-style: oblique;
+}
+
+.formdata{
+    text-align: center;
+    margin-top: 140px;
+}
+#labels{
+	font-size: 49px;
+    font-style: initial;
+}
+
+#email{
+	padding: 11px;
+    width: 382px;
+    border: 2px solid #3cbc24;
+    border-radius: 25px;
+	margin-left: 566px;
+}
+
+#submits{
+	display: block;
+    width: 13%;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #2F4960;
+    box-shadow: 0px 0px 0px rgb(0 0 0 / 0%);
+    transition: 0.4s;
+    color: #FFF;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 649px;
+    margin-top: 14px;
+}
+
+#submits:hover{
+	background-color: rgb(86, 141, 224);
+	color: #000;
+}
+
+.reset{
+    width: 505px;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+#passwords{
+    margin-left: 375px;
+    margin-top: 14px;
+
+}
