@@ -65,22 +65,35 @@ router.delete('/books/list/:id',(req,res)=>{
 })
 
 //total-sales
+// router.get('/total-sales',(req,res)=>{
+//     const total_query = "select * from book_inventory";
+//     connection.query(total_query,(err,data)=>{
+//         if(err){
+//             console.log(err);
+//         }
+//         else{
+//             var sum = 0;
+//             for (const total of data){
+//                 sum = sum + total.sold;
+//             }
+//             const karan = {
+//                 total: sum,
+//             }
+//             res.json(karan);
+//         }
+//     })
+// });
 router.get('/total-sales',(req,res)=>{
-    const total_query = "select * from book_inventory";
+    const total_query = "SELECT SUM(sold) AS total FROM book_inventory";
     connection.query(total_query,(err,data)=>{
         if(err){
             console.log(err);
         }
         else{
-            var sum = 0;
-            for (const total of data){
-                sum = sum + total.sold;
-            }
-            const karan = {
-                total: sum,
-            }
-            res.json(karan);
+            res.json(data);
         }
     })
 })
+
+
 module.exports = router;
