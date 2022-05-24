@@ -1,5 +1,17 @@
 var mysql      = require('mysql');
 
+const knex = require('knex')({
+    client:'mysql',
+    connection:{
+        host : 'localhost',
+        user : 'root',
+        password: '',
+        port: 3306,
+        database : 'book_inventory'
+    }
+});
+
+
 
 var userConnection = mysql.createConnection({
   host     : 'localhost',
@@ -16,4 +28,4 @@ userConnection.connect((err)=>{
     }
 });
 
-module.exports = userConnection;
+module.exports = {userConnection};

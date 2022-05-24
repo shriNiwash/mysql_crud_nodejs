@@ -10,6 +10,17 @@ const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const multer = require('multer');
 // const userConnection = require('./model/user');
+const knex = require('knex')({
+    client:'mysql',
+    connection:{
+        host : 'localhost',
+        user : 'root',
+        password: '',
+        port: 3306,
+        database : 'book_inventory'
+    }
+});
+
 
 
 //body parser
@@ -67,114 +78,115 @@ var storage = multer.diskStorage({
 var upload = multer({storage:storage});
 
 //book post
-app.post('/insert',upload.single('blogimage'),(req,res)=>{
+app.post('/insert',upload.single('blogimage'),async(req,res)=>{
     var name = req.body.name;
     var sold = req.body.sold;
     var image = req.file.filename;
+    const dat = {name,sold,image};
+    // const insert_data = ( { name,sold,image } = req.body);
     console.log(name);
     console.log(sold);
     console.log(image);
-    insert = "insert into book_inventory values(null,'"+name+"',"+sold+",'"+image+"')";
-    connection.query(insert,(err,data)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log('data inserted',data);
-            res.redirect('/list');
-        }
-    })
+    const data = await knex.insert(dat).into('book_inventory');
+    if(data){
+        console.log('data inserted',data);
+        res.redirect('/list');
+
+    }
+    else{
+        console.log('there is some error');
+    }
 });
 
 //read operation
-app.get('/list',isAuthenticate,(req,res)=>{
-    const dat = "select * from book_inventory";
-    connection.query(dat,(err,data)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.render('datalist',{list:data});
-        }
 
-    })
+app.get('/list',isAuthenticate,async(req,res)=>{
+    try{
+        const data = await knex.select().from('book_inventory');
+        res.render('datalist',{list:data});
+    }
+    catch(err){
+        console.log(err);
+    }
 })
 
 //update operation
-app.get('/list/edit/:id',isAuthenticate,(req,res)=>{
-    const ids = req.params.id;
-    const quer = "select id,name,sold,image from book_inventory where id="+ids+"";
-    connection.query(quer,(err,data)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            console.log(data);
-            console.log(data[0].name);
-            res.render('update',{
-                name:data[0].name,
-                sold:data[0].sold,
-                image:data[0].image,
-                ide:ids
-            })
-        }
-    })
-})
 
+
+app.get('/list/edit/:id',isAuthenticate,async(req,res)=>{
+    const id = req.params.id;
+    const qeury = { id };
+    try{
+        const data = await knex.select('id','name','sold','image').where(qeury).from('book_inventory');
+        res.render('update',{
+            name: data[0].name,
+            sold:data[0].sold,
+            image: data[0].image,
+            ide: id
+        })
+        console.log(data);
+    }
+    catch(err){
+        console.log(err);
+    }
+
+
+
+})
 //update post operation
-app.post("/list/edit/:id",upload.single('blogimage'),(req,res)=>{
-    const ids=req.params.id;
-    const update_query = "select image from book_inventory where id="+ids+"";
-    connection.query(update_query,(err,data)=>{
-        if(req.file ==  null){
-            const update = "update book_inventory set name='"+req.body.name+"',sold="+req.body.sold+",image='"+data[0].image+"' where id = "+ids+"";
-            connection.query(update,(err,data)=>{
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    console.log('data updated',data);
-                    res.redirect('/list');
-                    
-                }
-            })
-        }
+
+app.post('/list/edit/:id',upload.single('blogimage'),async(req,res)=>{
+    const id = req.params.id;
+    const query = { id };
+    try{
+        const data = await knex.select('image').where(query).from('book_inventory');
+        const img = data[0].image;
+        console.log(img);
+        const name  = req.body.name;
+        const sold = req.body.sold;
+        const image = (req.file == null) ? img : req.file.filename;
+        const update_data = { name , sold , image };
+        const update_query = await knex('book_inventory').where(query).update(update_data);
+        if(update_query){
+            console.log('data updated',update_query);
+            res.redirect('/list');
+        } 
         else{
-            const updat = "update book_inventory set name='"+req.body.name+"',sold="+req.body.sold+",image='"+req.file.filename+"' where id = "+ids+"";
-            connection.query(updat,(err,data)=>{
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    console.log('data updated',data);
-                    res.redirect('/list');
-                    
-                }
-            })
+            console.log('there is some error');
         }
-    })
+    }
+    catch(err){
+        console.log(err);
+    }
+
 })
 
 //delete operation
-app.get("/list/delete/:id",isAuthenticate,(req,res)=>{
-    const idss = req.params.id;
-    const del = "delete from book_inventory where id ="+idss+"";
-    connection.query(del,(err,data)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log('one row deleted');
+
+app.get('/list/delete/:id',isAuthenticate,async(req,res)=>{
+    const id = req.params.id;
+    const que = { id };
+    try{
+        const data = await knex('book_inventory').delete().where(que);
+        if(data){
+            console.log('data deleted',data);
             res.redirect('/list');
-            
         }
-    })
+        else{
+            console.log('there is some error');
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+})
 
-});
-
-//local streightegy
 passport.use(new LocalStrategy(
     function(username, password, done) {
-        const quer = "select username,password from user where username='"+username+"'";
-      connection.query(quer, function (err, user) {
+        const dat = { username }
+        // const quer = "select username,password from user where username='"+username+"'";
+        knex('user').select('username','password').where({username}).asCallback(function (err, user) {
+            console.log(user[0]);
         if (err) { return done(err) }
         if (!user) { return done(null, false,{message:"Incorrect Username."}); }
         var passwords = user[0].password;
@@ -199,7 +211,7 @@ passport.serializeUser((user,done)=>{
 
 passport.deserializeUser((username,done)=>{
     const sel = "select * from user where username='"+username+"'";
-    connection.query(sel,(err,user)=>{
+    knex('user').select().where({username}).asCallback((err,user)=>{
         if(err) return done(null,false);
         return done(null,user);
     })
@@ -235,28 +247,27 @@ app.get('/register',(req,res)=>{
     res.render('registration');
 })
 
-app.post('/register',(req,res,done)=>{
-    const da = "select username from user where username='"+req.body.username+"'";
-    connection.query(da,(err,user)=>{
-        console.log(user[0]);
-        if(err) done(null,false);
-        // else if(user){
-        //     console.log('user already existed');
-        //     res.redirect('/login');
-        // }
-        else{
-                const inser = "insert into user values('"+req.body.username+"','"+req.body.password+"')";
-                connection.query(inser,(err,data)=>{
-                    if(err){
-                        console.log(err);
-                    }
-                    else{
-                        console.log(data);
-                        res.redirect('/login');
-                    }
-                })
+
+app.post('/register',async(req,res)=>{
+    const da = req.body.username;
+    const data = { da };
+    const user = knex('user').select('username').where(data);
+    if(user[0] ==  null){
+        const username = req.body.username;
+        const password = req.body.password;
+        const datas = { username,password };
+        const data_insert = await knex('user').insert(datas);
+        if(data_insert){
+            console.log('user signed up',data_insert);
+            res.redirect('/login');
         }
-    })
+        else{
+            console.log('error happened');
+        }
+    }
+    else{
+        res.redirect('/login');
+    }
 });
 
 

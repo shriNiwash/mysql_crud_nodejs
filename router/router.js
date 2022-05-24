@@ -2,98 +2,97 @@ const express = require('express');
 const router = express.Router();
 const bodyparser = require('body-parser');
 const connection = require('../model/mysql');
+const async = require('hbs/lib/async');
 
+
+const knex = require('knex')({
+    client: "mysql",
+    connection:{
+        host : "localhost",
+        user : "root",
+        password: "",
+        port: 3306,
+        database : "book_inventory",
+    }
+});
 
 //body parser
 router.use(bodyparser.json());
 router.use(express.urlencoded({extended:false}));
 
 
-router.post('/books',(req,res)=>{
+
+router.post('/books',async(req,res)=>{
     const name = req.body.name;
     const sold = req.body.sold;
     const image = req.body.image;
+    const all_data = { name , sold , image };
+    try{
+        const insert = await knex.insert(req.body).into('book_inventory');
+        res.json(insert[0]);
+        console.log('one row inserted',insert[0]);
 
-    insert = "insert into book_inventory values(null,'"+ name +"',"+ sold +",'"+ image +"')";
-    connection.query(insert,(err,data)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log('one row inserted');
-            res.send(data);
-        }
-    })
-})
-router.get('/books/list',(req,res)=>{
-    const query = 'select * from book_inventory';
-    connection.query(query,(err,data)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.json(data);
-        }
-    })
-});
+    }
+    catch(err){
+        console.log(err);
+    }
 
-router.patch('/books/list/:id',(req,res)=>{
-    const ids = req.params.id;
-    update = "update book_inventory set name='"+req.body.name+"',sold="+req.body.sold+",image='"+req.body.image+"' where id = "+ids+"";
-    connection.query(update,(err,data)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            console.log('tergeted id updated');
-            res.send(data);
 
-        }
-    })
 })
 
-router.delete('/books/list/:id',(req,res)=>{
-    const idss = req.params.id;
-    const del = "delete from book_inventory where id ="+idss+"";
-    connection.query(del,(err,data)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log('one row is deleted');
-            res.json(data);
-        }
-    })
+router.get("/books/list",async(req,res)=>{
+    try{
+    const data = await knex.select().from('book_inventory');
+    res.json(data);
+    console.log(data);
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+   
+
+router.patch('/books/list/:id',async(req,res)=>{
+    const id = req.params.id;
+    const query = { id };
+    try{
+        const update = await knex('book_inventory').update(req.body).where(query);
+        console.log(update);
+        res.json(update);
+    }
+    catch(err){
+        console.log(err);
+    }
+
 })
 
-//total-sales
-// router.get('/total-sales',(req,res)=>{
-//     const total_query = "select * from book_inventory";
-//     connection.query(total_query,(err,data)=>{
-//         if(err){
-//             console.log(err);
-//         }
-//         else{
-//             var sum = 0;
-//             for (const total of data){
-//                 sum = sum + total.sold;
-//             }
-//             const karan = {
-//                 total: sum,
-//             }
-//             res.json(karan);
-//         }
-//     })
-// });
-router.get('/total-sales',(req,res)=>{
-    const total_query = "SELECT SUM(sold) AS total FROM book_inventory";
-    connection.query(total_query,(err,data)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.json(data);
-        }
-    })
+
+router.delete('/books/list/:id',async(req,res)=>{
+    const id = req.params.id;
+    const query = { id };
+    try{
+        const data = await knex('book_inventory').delete().where(query);
+        console.log('deleted');
+        res.send('row deleted');
+
+    }
+    catch(err){
+        console.log(err);
+    }
 })
+
+
+router.get('/total-sales',async(req,res)=>{
+    try{
+        const data = await knex('book_inventory').sum('sold as total');
+        console.log(data);
+        res.json(data);
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
 
 
 module.exports = router;
