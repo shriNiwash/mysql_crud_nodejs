@@ -1,20 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bodyparser = require('body-parser');
-const connection = require('../model/mysql');
 const async = require('hbs/lib/async');
+const knex = require('../model/connectionDb');
 
-
-const knex = require('knex')({
-    client: "mysql",
-    connection:{
-        host : "localhost",
-        user : "root",
-        password: "",
-        port: 3306,
-        database : "book_inventory",
-    }
-});
 
 //body parser
 router.use(bodyparser.json());

@@ -3,25 +3,12 @@ const bodyparser = require('body-parser');
 const app = express();
 const hbs = require('hbs');
 const path = require('path');
-port = process.env.PORT || 3000;
-const connection = require('./model/mysql');
+port = process.env.PORTS || 3000;
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const multer = require('multer');
-// const userConnection = require('./model/user');
-const knex = require('knex')({
-    client:'mysql',
-    connection:{
-        host : 'localhost',
-        user : 'root',
-        password: '',
-        port: 3306,
-        database : 'book_inventory'
-    }
-});
-
-
+const knex = require('./model/connectionDb');
 
 //body parser
 app.use(bodyparser.json());
